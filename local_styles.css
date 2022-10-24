@@ -1,0 +1,21 @@
+#map{ position:absolute;top:0;left:0;bottom:0;right:0; }
+.wikidata {
+    white-space: nowrap;
+    width: auto;
+    height: auto;
+    background: white;
+    border: 1px solid black;
+  }
+
+  .wikidata.q {
+    background: white;
+    color: orange;
+  }
+
+  .link_format {
+    white-space: nowrap;
+    width: auto;
+    height: auto;
+    background: white;
+    color: black;
+  }

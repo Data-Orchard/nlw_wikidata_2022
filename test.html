@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>wikidata on leaflet</title>
+  <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-hash@0.2.1/leaflet-hash.js"></script>
+  <style>
+    .wikidata {
+      white-space: nowrap;
+      width: auto;
+      height: auto;
+      background: orange;
+      border: 1px solid black;
+    }
+
+    .wikidata.q {
+      background: black;
+      color: orange;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="map" style="position:absolute;top:0;left:0;bottom:0;right:0;"></div>
+  <script>
+    var map = L.map("map", L.extend({
+      zoom: 12,
+      center: [52.2110,-3.8123]    
+    }, L.Hash.parseHash(location.hash)));
+
+L.tileLayer("http://openstreetmap.cymru/osm_tiles/{z}/{x}/{y}.png", {
+        attribution: "<a href='http://maps.gsi.go.jp/development/ichiran.html'>Mapio Cymru</a>"
+      }).addTo(map);
+ #  L.control.layers({
+  #    "Mapio Cymru": L.tileLayer("http://openstreetmap.cymru/osm_tiles/{z}/{x}/{y}.png", {
+  #      attribution: "<a href='http://maps.gsi.go.jp/development/ichiran.html'>Mapio Cymru</a>"
+  #    }),
+      
+  #    "OpenStreetMap": L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+ #       attribution: "&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors"
+      })
+ #   }).addTo(map);
+
+    L.hash(map);
+
+    var group = L.layerGroup().addTo(map);
+    var lang = "cy";
+    if (location.search.match(/^\?([a-zA-Z_]+)$/)) lang = RegExp.$1;
+
+    map.on("moveend", function() {
+      var bounds = map.getBounds();
+      var sparql =
+        `SELECT ?place ?placeLabel ?location WHERE {
+SERVICE wikibase:box {
+ ?place wdt:P625 ?location.
+ bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral.
+ bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral.
+}
+SERVICE wikibase:label { bd:serviceParam wikibase:language "${lang}". }
+} limit 2000`;
+      group.clearLayers();
+      fetch("https://query.wikidata.org/sparql?query=" + encodeURIComponent(sparql), {
+        "headers": {
+          "accept": "application/sparql-results+json"
+        },
+        "method": "GET",
+        "mode": "cors"
+      }).then(a => a.json()).then(a => {
+        a.results.bindings.forEach(x => {
+          if (x.location.value.match(/^Point\((.+) (.+)\)$/)) {
+            var lon = parseFloat(RegExp.$1);
+            var lat = parseFloat(RegExp.$2);
+            var html = "<span class='wikidata'>" + x.placeLabel.value + "</span>";
+            if (x.placeLabel.value.match(/^Q[0-9]+$/)) html = html.replace("wikidata", "wikidata q");
+            L.marker([lat, lon], {
+              icon: L.divIcon({
+                html: html
+              })
+            }).addTo(group);
+          }
+        });
+      });
+    }).fire("moveend");
+  </script>
+</body>
+
+</html>

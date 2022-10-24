@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head><title>Mapio Cymru - Wicidata</title>
+        <link rel="stylesheet" href="https://d19vzq90twjlae.cloudfront.net/leaflet-0.7.3/leaflet.css" />
+        <script src="https://d19vzq90twjlae.cloudfront.net/leaflet-0.7.3/leaflet.js"></script>
+        <script src="src/leaflet-search.js"></script>
+        <script src="src/leaflet-hash.js"></script>
+        <script src="src/local_scripts.js"></script>
+        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+        <link rel="stylesheet" href="src/leaflet-search.css" />
+        <style>
+          #map{ position:absolute;top:0;left:0;bottom:0;right:0; }
+          .wikidata {
+      white-space: nowrap;
+      width: auto;
+      height: auto;
+      background: orange;
+      border: 1px solid black;
+    }
+
+    .wikidata.q {
+      background: black;
+      color: orange;
+    }
+        </style>
+      </head>
+    <body>
+        <div id="map"></div>
+
+        <script>
+      
+        // initialize the map
+        var map = L.map('map').setView([52.2110,-3.8123], 12)
+        
+        // load a tile layer
+
+        var basemap_0 = L.tileLayer('https://openstreetmap.cymru/osm_tiles/{z}/{x}/{y}.png',
+          {
+            attribution: 'Tiles by <a href="https://mapio.cymru">(c) OSM Contributors</a>, Data by <a href="https://wikidata.org">Wikidata</a>',
+            maxZoom: 17,
+            minZoom: 9
+          })
+          basemap_0.addTo(map);
+          
+var filter_type = "wd:Q3914"
+var sparql_2
+
+
+
+var myIcon = L.icon({
+    iconUrl: 'officialname.png',
+    iconSize: [95, 95],
+    iconAnchor: [22, 94],
+    popupAnchor: [24, -95],
+    //shadowUrl: 'my-icon-shadow.png',
+    //shadowSize: [68, 95],
+    //shadowAnchor: [22, 94]
+});
+
+
+
+var schoolsmk = L.icon({
+    iconUrl: 'schools.png',
+    iconSize: [95, 95],
+    iconAnchor: [22, 94],
+    popupAnchor: [24, -95],
+    //shadowUrl: 'my-icon-shadow.png',
+    //shadowSize: [68, 95],
+    //shadowAnchor: [22, 94]
+});
+
+var officialnamemk = L.icon({
+    iconUrl: 'officialname.png',
+    iconSize: [95, 95],
+    iconAnchor: [22, 94],
+    popupAnchor: [24, -95],
+    //shadowUrl: 'my-icon-shadow.png',
+    //shadowSize: [68, 95],
+    //shadowAnchor: [22, 94]
+});
+
+var transportmk = L.icon({
+    iconUrl: 'transport.png',
+    iconSize: [95, 95],
+    iconAnchor: [22, 94],
+    popupAnchor: [24, -95],
+    //shadowUrl: 'my-icon-shadow.png',
+    //shadowSize: [68, 95],
+    //shadowAnchor: [22, 94]
+});
+
+var medicalmk = L.icon({
+    iconUrl: 'medical.png',
+    iconSize: [95, 95],
+    iconAnchor: [22, 94],
+    popupAnchor: [24, -95],
+    //shadowUrl: 'my-icon-shadow.png',
+    //shadowSize: [68, 95],
+    //shadowAnchor: [22, 94]
+});
+
+var toiletsmk = L.icon({
+    iconUrl: 'toilet.png',
+    iconSize: [95, 95],
+    iconAnchor: [22, 94],
+    popupAnchor: [24, -95],
+    //shadowUrl: 'my-icon-shadow.png',
+    //shadowSize: [68, 95],
+    //shadowAnchor: [22, 94]
+});
+
+var GLAMmk = L.icon({
+    iconUrl: 'GLAM.png',
+    iconSize: [95, 95],
+    iconAnchor: [22, 94],
+    popupAnchor: [24, -95],
+    //shadowUrl: 'my-icon-shadow.png',
+    //shadowSize: [68, 95],
+    //shadowAnchor: [22, 94]
+});
+
+var historicmk = L.icon({
+    iconUrl: 'historic.png',
+    iconSize: [95, 95],
+    iconAnchor: [22, 94],
+    popupAnchor: [24, -95],
+    //shadowUrl: 'my-icon-shadow.png',
+    //shadowSize: [68, 95],
+    //shadowAnchor: [22, 94]
+});
+
+
+var prehistoricmk = L.icon({
+    iconUrl: 'prehistoric.png',
+    iconSize: [95, 95],
+    iconAnchor: [22, 94],
+    popupAnchor: [24, -95],
+    //shadowUrl: 'my-icon-shadow.png',
+    //shadowSize: [68, 95],
+    //shadowAnchor: [22, 94]
+});
+
+
+var hillsmk = L.icon({
+    iconUrl: 'hills.png',
+    iconSize: [95, 95],
+    iconAnchor: [22, 94],
+    popupAnchor: [24, -95],
+    //shadowUrl: 'my-icon-shadow.png',
+    //shadowSize: [68, 95],
+    //shadowAnchor: [22, 94]
+});
+
+var beachesmk = L.icon({
+    iconUrl: 'beaches.png',
+    iconSize: [95, 95],
+    iconAnchor: [22, 94],
+    popupAnchor: [24, -95],
+    //shadowUrl: 'my-icon-shadow.png',
+    //shadowSize: [68, 95],
+    //shadowAnchor: [22, 94]
+});
+
+var cparkmk = L.icon({
+    iconUrl: 'cpark.png',
+    iconSize: [95, 95],
+    iconAnchor: [22, 94],
+    popupAnchor: [24, -95],
+    //shadowUrl: 'my-icon-shadow.png',
+    //shadowSize: [68, 95],
+    //shadowAnchor: [22, 94]
+});
+
+var lakesmk = L.icon({
+    iconUrl: 'lakes.png',
+    iconSize: [95, 95],
+    iconAnchor: [22, 94],
+    popupAnchor: [24, -95],
+    //shadowUrl: 'my-icon-shadow.png',
+    //shadowSize: [68, 95],
+    //shadowAnchor: [22, 94]
+});
+
+var schools = L.layerGroup()
+    var lang = "cy";
+    
+    if (location.search.match(/^\?([a-zA-Z_]+)$/)) lang = RegExp.$1;
+
+    map.on("moveend", function() {
+      var bounds = map.getBounds();
+      var test = bounds;
+//      var sparql_1 = `SELECT ?placeLabel ?location ?typeLabel ?place WHERE {
+//  SERVICE wikibase:box {?place wdt:P625 ?location . bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral . bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral .}
+//  FILTER EXISTS { ?place wdt:P31/wdt:P279* wd:Q2385804 }
+//  ?place wdt:P31 ?type .
+// minus { ?place wdt:P576 ?end } .            
+// minus { ?place wdt:P31 wd:Q1244442 } . 
+//    SERVICE wikibase:label { bd:serviceParam wikibase:language "cy". }
+//} LIMIT 2000
+//`;
+generateSparqlQuery("schools");
+console.log(sparql_2)
+schools.clearLayers();
+      fetch("https://query.wikidata.org/sparql?query=" + encodeURIComponent(sparql_2), {
+        "headers": {
+          "accept": "application/sparql-results+json"
+        },
+        "method": "GET",
+        "mode": "cors"
+      }).then(a => a.json()).then(a => {
+        a.results.bindings.forEach(x => {
+          if (x.location.value.match(/^Point\((.+) (.+)\)$/)) {
+            var lon = parseFloat(RegExp.$1);
+            var lat = parseFloat(RegExp.$2);
+            var html = "<h3>"+x.placeLabel.value+"</h3><span class='link_format'> <a href=\"https://www.openstreetmap.org/#map=16/" + lat + "/" + lon + "\">Gweld ar OpenStreetMap</a><br /><a href=\"" + x.place.value + "\"> Gweld ar Wikidata </a></span>"  ;
+            if (x.placeLabel.value.match(/^Q[0-9]+$/)) {
+             //Do not add the point to the layer
+} else {
+           L.marker([lat, lon],{icon: schoolsmk}).bindPopup(html).openPopup().addTo(schools);
+           
+          }
+          } 
+        });
+      });
+    }).fire("moveend");
+
+
+    var transport = L.layerGroup()
+    var lang = "cy";
+    
+    if (location.search.match(/^\?([a-zA-Z_]+)$/)) lang = RegExp.$1;
+
+    map.on("moveend", function() {
+      var bounds = map.getBounds();
+      var sparql_1 = `SELECT ?place ?placeLabel ?location ?typeLabel ?operator ?operatorLabel WHERE {
+SERVICE wikibase:box {
+    ?place wdt:P625 ?location .
+    bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral .
+    bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral .
+  }
+  FILTER EXISTS { ?place wdt:P31/wdt:P279* wd:Q12819564 }
+  ?place wdt:P31 ?type .
+
+ minus { ?place wdt:P31 wd:Q4663385 }
+ minus { ?place wdt:P31 wd:Q54471221 }   
+ 
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "cy". }
+} LIMIT 2000
+`;
+console.log(sparql_2)
+      transport.clearLayers();
+      fetch("https://query.wikidata.org/sparql?query=" + encodeURIComponent(sparql_1), {
+        "headers": {
+          "accept": "application/sparql-results+json"
+        },
+        "method": "GET",
+        "mode": "cors"
+      }).then(a => a.json()).then(a => {
+        a.results.bindings.forEach(x => {
+          if (x.location.value.match(/^Point\((.+) (.+)\)$/)) {
+            var lon = parseFloat(RegExp.$1);
+            var lat = parseFloat(RegExp.$2);
+            var html = "<h3>"+x.placeLabel.value+"</h3><span class='link_format'> <a href=\"https://www.openstreetmap.org/#map=16/" + lat + "/" + lon + "\">Gweld ar OpenStreetMap</a><br /><a href=\"" + x.place.value + "\"> Gweld ar Wikidata </a></span>"  ;
+            if (x.placeLabel.value.match(/^Q[0-9]+$/)) {
+             //Do not add the point to the layer
+} else {
+           L.marker([lat, lon],{icon: transportmk}).bindPopup(html).openPopup().addTo(transport);
+           
+          }
+          }
+        });
+      });
+    }).fire("moveend");    
+
+
+    var medical = L.layerGroup()
+    var lang = "cy";
+    
+    if (location.search.match(/^\?([a-zA-Z_]+)$/)) lang = RegExp.$1;
+
+    map.on("moveend", function() {
+      var bounds = map.getBounds();
+      var sparql_1 =`SELECT ?place ?placeLabel ?location ?typeLabel ?operator ?operatorLabel WHERE {
+SERVICE wikibase:box {
+    ?place wdt:P625 ?location .
+    bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral .
+    bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral .
+  }
+  FILTER EXISTS { ?place wdt:P31/wdt:P279* wd:Q4260475 }
+  ?place wdt:P31 ?type .
+ ?place wdt:P137 ?operator .
+ minus {?place  wdt:P31 wd:Q64578911 .} 
+ 
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "cy". }
+} LIMIT 2000
+`;
+      medical.clearLayers();
+      fetch("https://query.wikidata.org/sparql?query=" + encodeURIComponent(sparql_1), {
+        "headers": {
+          "accept": "application/sparql-results+json"
+        },
+        "method": "GET",
+        "mode": "cors"
+      }).then(a => a.json()).then(a => {
+        a.results.bindings.forEach(x => {
+          if (x.location.value.match(/^Point\((.+) (.+)\)$/)) {
+            var lon = parseFloat(RegExp.$1);
+            var lat = parseFloat(RegExp.$2);
+            var html = "<h3>"+x.placeLabel.value+"</h3><span class='link_format'> <a href=\"https://www.openstreetmap.org/#map=16/" + lat + "/" + lon + "\">Gweld ar OpenStreetMap</a><br /><a href=\"" + x.place.value + "\"> Gweld ar Wikidata </a></span>"  ;
+            if (x.placeLabel.value.match(/^Q[0-9]+$/)) {
+             //Do not add the point to the layer
+} else {
+           L.marker([lat, lon],{icon: medicalmk}).bindPopup(html).openPopup().addTo(medical);
+           
+          }
+          }
+        });
+      });
+    }).fire("moveend");    
+
+    var toilets = L.layerGroup()
+    var lang = "cy";
+    
+    if (location.search.match(/^\?([a-zA-Z_]+)$/)) lang = RegExp.$1;
+
+    map.on("moveend", function() {
+      var bounds = map.getBounds();
+      var sparql_1 =`SELECT ?place ?placeLabel ?location ?typeLabel ?locationLabel WHERE {
+SERVICE wikibase:box {
+    ?place wdt:P625 ?location .
+    bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral .
+    bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral .
+  }
+  FILTER EXISTS { ?place wdt:P31 wd:Q813966 }
+  ?place wdt:P31 ?type .
+ 
+  
+ 
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "cy". }
+} LIMIT 2000
+`;
+      toilets.clearLayers();
+      fetch("https://query.wikidata.org/sparql?query=" + encodeURIComponent(sparql_1), {
+        "headers": {
+          "accept": "application/sparql-results+json"
+        },
+        "method": "GET",
+        "mode": "cors"
+      }).then(a => a.json()).then(a => {
+        a.results.bindings.forEach(x => {
+          if (x.location.value.match(/^Point\((.+) (.+)\)$/)) {
+            var lon = parseFloat(RegExp.$1);
+            var lat = parseFloat(RegExp.$2);
+            var html = "<h3>"+x.placeLabel.value+"</h3><span class='link_format'> <a href=\"https://www.openstreetmap.org/#map=16/" + lat + "/" + lon + "\">Gweld ar OpenStreetMap</a><br /><a href=\"" + x.place.value + "\"> Gweld ar Wikidata </a></span>"  ;
+            if (x.placeLabel.value.match(/^Q[0-9]+$/)) {
+             //Do not add the point to the layer
+} else {
+           L.marker([lat, lon],{icon: toiletsmk}).bindPopup(html).openPopup().addTo(toilets);
+           
+          }
+          }
+        });
+      });
+    }).fire("moveend");    
+
+    var GLAM = L.layerGroup()
+    var lang = "cy";
+    
+    if (location.search.match(/^\?([a-zA-Z_]+)$/)) lang = RegExp.$1;
+
+    map.on("moveend", function() {
+      var bounds = map.getBounds();
+      var sparql_1 =`SELECT ?place ?placeLabel ?location ?typeLabel WHERE {
+SERVICE wikibase:box {
+    ?place wdt:P625 ?location .
+    bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral .
+    bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral .
+  }
+  FILTER EXISTS { ?place wdt:P31/wdt:P279* wd:Q1030034 }
+  ?place wdt:P31 ?type .
+?type wdt:P279* wd:Q1030034 .
+  
+minus { ?place wdt:P576 ?end } .            
+minus { ?place wdt:P582 ?end1 } . 
+ 
+  
+ 
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "cy". }
+} LIMIT 2000
+`;
+      GLAM.clearLayers();
+      fetch("https://query.wikidata.org/sparql?query=" + encodeURIComponent(sparql_1), {
+        "headers": {
+          "accept": "application/sparql-results+json"
+        },
+        "method": "GET",
+        "mode": "cors"
+      }).then(a => a.json()).then(a => {
+
+        a.results.bindings.forEach(x => {
+          
+          if (x.location.value.match(/^Point\((.+) (.+)\)$/)) {
+            var lon = parseFloat(RegExp.$1);
+            var lat = parseFloat(RegExp.$2);
+            var html = "<h3>"+x.placeLabel.value+"</h3><span class='link_format'> <a href=\"https://www.openstreetmap.org/#map=16/" + lat + "/" + lon + "\">Gweld ar OpenStreetMap</a><br /><a href=\"" + x.place.value + "\"> Gweld ar Wikidata </a></span>"  ;
+           if (x.placeLabel.value.match(/^Q[0-9]+$/)) {
+             //Do not add the point to the layer
+} else {
+           L.marker([lat, lon],{icon: GLAMmk}).bindPopup(html).openPopup().addTo(GLAM);
+           
+          }
+
+          }
+
+        });
+      });
+    }).fire("moveend");    
+
+
+    var historic = L.layerGroup()
+    var lang = "cy";
+    
+    if (location.search.match(/^\?([a-zA-Z_]+)$/)) lang = RegExp.$1;
+
+    map.on("moveend", function() {
+      var bounds = map.getBounds();
+      var sparql_1 =`SELECT ?place ?placeLabel ?location ?typeLabel ?locationLabel WHERE {
+SERVICE wikibase:box {
+    ?place wdt:P625 ?location .
+    bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral .
+    bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral .
+  }
+  { ?place wdt:P1459 ?cadw. }
+UNION { ?place wdt:P4658 ?coflein }
+  UNION { ?place wdt:P4641 ?chapels }
+
+ ?place wdt:P31 ?type  .
+ 
+  
+ 
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "cy". }
+} LIMIT 2000
+`;
+      historic.clearLayers();
+      fetch("https://query.wikidata.org/sparql?query=" + encodeURIComponent(sparql_1), {
+        "headers": {
+          "accept": "application/sparql-results+json"
+        },
+        "method": "GET",
+        "mode": "cors"
+      }).then(a => a.json()).then(a => {
+        a.results.bindings.forEach(x => {
+          if (x.location.value.match(/^Point\((.+) (.+)\)$/)) {
+            var lon = parseFloat(RegExp.$1);
+            var lat = parseFloat(RegExp.$2);
+            var html = "<h3>"+x.placeLabel.value+"</h3><span class='link_format'> <a href=\"https://www.openstreetmap.org/#map=16/" + lat + "/" + lon + "\">Gweld ar OpenStreetMap</a><br /><a href=\"" + x.place.value + "\"> Gweld ar Wikidata </a></span>"  ;
+            if (x.placeLabel.value.match(/^Q[0-9]+$/)) {
+             //Do not add the point to the layer
+} else {
+           L.marker([lat, lon],{icon: historicmk}).bindPopup(html).openPopup().addTo(historic);
+           
+          }
+          }else{console.log("Historic Trip")}
+        });
+      });
+    }).fire("moveend");        
+
+    var prehistoric = L.layerGroup()
+    var lang = "cy";
+    
+    if (location.search.match(/^\?([a-zA-Z_]+)$/)) lang = RegExp.$1;
+
+    map.on("moveend", function() {
+      var bounds = map.getBounds();
+      var sparql_1 =`SELECT ?place ?placeLabel ?location ?typeLabel ?locationLabel WHERE {
+SERVICE wikibase:box {
+    ?place wdt:P625 ?location .
+    bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral .
+    bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral .
+  }
+  { ?place wdt:P31/wdt:P279* wd:Q3395377 } 
+UNION { ?place wdt:P31/wdt:P279* wd:Q10521078 } .
+
+ ?place wdt:P31 ?type  .
+ 
+  
+ 
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "cy". }
+} LIMIT 2000
+`;
+      prehistoric.clearLayers();
+      fetch("https://query.wikidata.org/sparql?query=" + encodeURIComponent(sparql_1), {
+        "headers": {
+          "accept": "application/sparql-results+json"
+        },
+        "method": "GET",
+        "mode": "cors"
+      }).then(a => a.json()).then(a => {
+        a.results.bindings.forEach(x => {
+          if (x.location.value.match(/^Point\((.+) (.+)\)$/)) {
+            var lon = parseFloat(RegExp.$1);
+            var lat = parseFloat(RegExp.$2);
+            var html = "<h3>"+x.placeLabel.value+"</h3><span class='link_format'> <a href=\"https://www.openstreetmap.org/#map=16/" + lat + "/" + lon + "\">Gweld ar OpenStreetMap</a><br /><a href=\"" + x.place.value + "\"> Gweld ar Wikidata </a></span>"  ;
+            if (x.placeLabel.value.match(/^Q[0-9]+$/)) {
+             //Do not add the point to the layer
+} else {
+           L.marker([lat, lon],{icon: prehistoricmk}).bindPopup(html).openPopup().addTo(prehistoric);
+           
+          }
+          }
+        });
+      });
+    }).fire("moveend");        
+
+    var hills = L.layerGroup()
+    var lang = "cy";
+    
+    if (location.search.match(/^\?([a-zA-Z_]+)$/)) lang = RegExp.$1;
+
+    map.on("moveend", function() {
+      var bounds = map.getBounds();
+      var sparql_1 =`SELECT ?place ?placeLabel ?typeLabel ?location
+WHERE {
+SERVICE wikibase:box {
+    ?place wdt:P625 ?location .
+    bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral .
+    bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral .
+  } 
+  { ?place wdt:P31 wd:Q8502 .}
+  UNION { ?place wdt:P31 wd:Q54050 .}
+
+ ?place wdt:P31 ?type  .
+  ?place wdt:P2044 ?elev .
+  
+ 
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "cy". }
+} LIMIT 2000
+`;
+
+      hills.clearLayers();
+      fetch("https://query.wikidata.org/sparql?query=" + encodeURIComponent(sparql_1), {
+        "headers": {
+          "accept": "application/sparql-results+json"
+        },
+        "method": "GET",
+        "mode": "cors"
+      }).then(a => a.json()).then(a => {
+        a.results.bindings.forEach(x => {
+          if (x.location.value.match(/^Point\((.+) (.+)\)$/)) {
+            var lon = parseFloat(RegExp.$1);
+            var lat = parseFloat(RegExp.$2);
+            var html = "<h3>"+x.placeLabel.value+"</h3><span class='link_format'> <a href=\"https://www.openstreetmap.org/#map=16/" + lat + "/" + lon + "\">Gweld ar OpenStreetMap</a><br /><a href=\"" + x.place.value + "\"> Gweld ar Wikidata </a></span>"  ;
+            if (x.placeLabel.value.match(/^Q[0-9]+$/)) {
+             //Do not add the point to the layer
+} else {
+           L.marker([lat, lon],{icon: hillsmk}).bindPopup(html).openPopup().addTo(hills);
+           
+          }
+          }
+        });
+      });
+    }).fire("moveend");      
+    
+    var beaches = L.layerGroup()
+    var lang = "cy";
+    
+    if (location.search.match(/^\?([a-zA-Z_]+)$/)) lang = RegExp.$1;
+
+    map.on("moveend", function() {
+      var bounds = map.getBounds();
+      var sparql_1 =`SELECT ?place ?placeLabel ?typeLabel ?location 
+WHERE {
+SERVICE wikibase:box {
+    ?place wdt:P625 ?location  .
+    bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral .
+    bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral .
+  } 
+
+ ?place wdt:P31 wd:Q40080 .
+ ?place wdt:P31 ?type  .
+
+  
+ 
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "cy". }
+} LIMIT 2000
+`;
+
+      beaches.clearLayers();
+      fetch("https://query.wikidata.org/sparql?query=" + encodeURIComponent(sparql_1), {
+        "headers": {
+          "accept": "application/sparql-results+json"
+        },
+        "method": "GET",
+        "mode": "cors"
+      }).then(a => a.json()).then(a => {
+        a.results.bindings.forEach(x => {
+          if (x.location.value.match(/^Point\((.+) (.+)\)$/)) {
+            var lon = parseFloat(RegExp.$1);
+            var lat = parseFloat(RegExp.$2);
+            var html = "<h3>"+x.placeLabel.value+"</h3><span class='link_format'> <a href=\"https://www.openstreetmap.org/#map=16/" + lat + "/" + lon + "\">Gweld ar OpenStreetMap</a><br /><a href=\"" + x.place.value + "\"> Gweld ar Wikidata </a></span>"  ;
+            if (x.placeLabel.value.match(/^Q[0-9]+$/)) {
+             //Do not add the point to the layer
+} else {
+           L.marker([lat, lon],{icon: beachesmk}).bindPopup(html).openPopup().addTo(beaches);
+           
+          }
+          }
+        });
+      });
+    }).fire("moveend");    
+
+    var country_parks = L.layerGroup()
+    var lang = "cy";
+    
+    if (location.search.match(/^\?([a-zA-Z_]+)$/)) lang = RegExp.$1;
+
+    map.on("moveend", function() {
+      var bounds = map.getBounds();
+      var sparql_1 =`SELECT ?item ?placeLabel ?typeLabel ?coord 
+WHERE {
+SERVICE wikibase:box {
+    ?place wdt:P625 ?coord  .
+    bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral .
+    bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral .
+  } 
+  ?item wdt:P131* wd:Q25 .  
+?item wdt:P31 wd:Q350723 .
+
+  
+  ?item wdt:P625 ?coord .
+
+   
+  { ?item wdt:P31 ?type  .
+             ?type rdfs:label ?type_label . #manual way of getting label
+            FILTER (lang(?type_label) = "cy") #manual way of getting label  
+            }
+ 
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "cy". }
+} LIMIT 2000
+`;
+
+      country_parks.clearLayers();
+      fetch("https://query.wikidata.org/sparql?query=" + encodeURIComponent(sparql_1), {
+        "headers": {
+          "accept": "application/sparql-results+json"
+        },
+        "method": "GET",
+        "mode": "cors"
+      }).then(a => a.json()).then(a => {
+        a.results.bindings.forEach(x => {
+          if (x.location.value.match(/^Point\((.+) (.+)\)$/)) {
+            var lon = parseFloat(RegExp.$1);
+            var lat = parseFloat(RegExp.$2);
+            var html = "<h3>"+x.placeLabel.value+"</h3><span class='link_format'> <a href=\"https://www.openstreetmap.org/#map=16/" + lat + "/" + lon + "\">Gweld ar OpenStreetMap</a><br /><a href=\"" + x.place.value + "\"> Gweld ar Wikidata </a></span>"  ;
+            if (x.placeLabel.value.match(/^Q[0-9]+$/)) {
+             //Do not add the point to the layer
+} else {
+           L.marker([lat, lon],{icon: country_parksmk}).bindPopup(html).openPopup().addTo(country_parks);
+           
+          }
+          }
+        });
+      });
+    }).fire("moveend");    
+
+    var lakes = L.layerGroup()
+    var lang = "cy";
+    
+    if (location.search.match(/^\?([a-zA-Z_]+)$/)) lang = RegExp.$1;
+
+    map.on("moveend", function() {
+      var bounds = map.getBounds();
+      var sparql_1 =`SELECT ?place ?placeLabel ?typeLabel ?location 
+WHERE {
+SERVICE wikibase:box {
+    ?place wdt:P625 ?location  .
+    bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral .
+    bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral .
+  }
+
+ ?place wdt:P31/wdt:P279* wd:Q337567 .
+ ?place wdt:P31 ?type  .
+
+  
+ 
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "cy". }
+} LIMIT 2000
+`;
+
+      lakes.clearLayers();
+      fetch("https://query.wikidata.org/sparql?query=" + encodeURIComponent(sparql_1), {
+        "headers": {
+          "accept": "application/sparql-results+json"
+        },
+        "method": "GET",
+        "mode": "cors"
+      }).then(a => a.json()).then(a => {
+        a.results.bindings.forEach(x => {
+          if (x.location.value.match(/^Point\((.+) (.+)\)$/)) {
+            var lon = parseFloat(RegExp.$1);
+            var lat = parseFloat(RegExp.$2);
+            var html = "<h3>"+x.placeLabel.value+"</h3><span class='link_format'> <a href=\"https://www.openstreetmap.org/#map=16/" + lat + "/" + lon + "\">Gweld ar OpenStreetMap</a><br /><a href=\"" + x.place.value + "\"> Gweld ar Wikidata </a></span>"  ;
+            if (x.placeLabel.value.match(/^Q[0-9]+$/)) {
+             //Do not add the point to the layer
+} else {
+           L.marker([lat, lon],{icon: lakesmk}).bindPopup(html).openPopup().addTo(lakes);
+           
+          }
+          }
+        });
+      });
+    }).fire("moveend");    
+
+    var officialnames = L.layerGroup()
+    var lang = "cy";
+    
+    if (location.search.match(/^\?([a-zA-Z_]+)$/)) lang = RegExp.$1;
+
+    map.on("moveend", function() {
+      var bounds = map.getBounds();
+      var sparql_1 =`SELECT ?aa ?location ?placelabel
+WHERE {
+SERVICE wikibase:box {
+    ?aa wdt:P625 ?location  .
+    bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral .
+    bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral .
+  }
+  { ?aa p:P1448/prov:wasDerivedFrom/pr:P248 wd:Q107011559 }
+       ?aa wdt:P1448 ?placelabel .
+              BIND( LANG(?placelabel) AS ?language). 
+
+FILTER(STRSTARTS(?language, "cy")).
+    
+   SERVICE wikibase:label { bd:serviceParam wikibase:language "cy". }
+} LIMIT 2000
+`;
+//DO NOT COPY THIS CODE IT HAS IMPORTANT SYNTAX DIFFERENCES
+      officialnames.clearLayers();
+      fetch("https://query.wikidata.org/sparql?query=" + encodeURIComponent(sparql_1), {
+        "headers": {
+          "accept": "application/sparql-results+json"
+        },
+        "method": "GET",
+        "mode": "cors"
+      }).then(a => a.json()).then(a => {
+        a.results.bindings.forEach(x => {
+          if (x.location.value.match(/^Point\((.+) (.+)\)$/)) {
+            var lon = parseFloat(RegExp.$1);
+            var lat = parseFloat(RegExp.$2);
+            var html = "<h3>" + x.placelabel.value + "</h3><span class='link_format'><a href=\"https://www.openstreetmap.org/#map=16/"+ lat + "/" + lon +"\">Gweld ar OpenStreetMap</a> <br /> <a href=\"" + x.aa.value + "\"> Gweld ar Wikidata </a></span>";
+            if (x.placelabel.value.match(/^Q[0-9]+$/)) {
+             //Do not add the point to the layer
+} else {
+           L.marker([lat, lon],{icon: officialnamemk}).bindPopup(html).openPopup().addTo(officialnames);
+           
+          }
+          }
+        });
+      });
+    }).fire("moveend");    
+
+
+
+    var baseLayers = {
+    "OpenStreetMap": basemap_0
+};
+
+var overlays = {
+   "Ysgol": schools,
+   "Trafnidiaeth": transport,
+   "Meddygol": medical,
+   "Toiledau": toilets,
+   "Diwylliant": GLAM,
+   "Safleoedd Hanesyddol": historic,
+   "Safleoedd Cynhanesyddol": prehistoric,
+   "Bryniau a Mynyddoedd": hills,
+   "Traethau": beaches,
+   //"Parciau Gwledig": country_parks,
+   "Llynnoedd a Chronfeydd Dŵr": lakes,
+   "Enwau Lleoedd Safonol Cymru": officialnames
+
+};
+var hash = new L.Hash(map);
+
+L.control.layers(baseLayers, overlays, {collapsed:false}).addTo(map);
+
+
+	
+	map.addControl( new L.Control.Search({
+		url: 'https://nominatim.openstreetmap.org/search?format=json&q={s}&accept-language=cy,en',
+		jsonpParam: 'json_callback',
+		propertyName: 'display_name',
+		propertyLoc: ['lat','lon'],
+		marker: L.circleMarker([0,0],{radius:30}),
+		autoCollapse: true,
+		autoType: false,
+		zoom: 14,	
+    textPlaceholder: 'Chwilio...',
+    minLength: 2
+    
+	}) );
+
+
+
+
+
+        </script>
+        
+    </body>
+</html>
