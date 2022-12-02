@@ -220,6 +220,7 @@ var lang_select = "cy" //This means Cymraeg. It can be switched to en for Englis
 var linktext1OSM = "\">Gweld ar OpenStreetMap</a><br /><a href=\"" //This is text that can create hotlinks
 var linktext2OSM = "\"> Gweld ar Wikidata </a></span>" //This is text that can create hotlinks
 let legend_state = 0
+var error_popup = "<h1>Gormod o ganlyniadau chwilio</h1> <p>Ni fydd pob nodwedd yn cael ei dangos. Chwyddo'n agosach a chwilio eto</p>"
 
 var legend = L.control({ position: "bottomleft" });
 
@@ -260,7 +261,7 @@ var stateChangingButton = L.easyButton({
         }, {
             stateName: 'Cymraeg',        // name the state
             icon:      '<img height="40px" width="50px" class="toggle" alt="Cymraeg" src="images/English_shown.png"/>',               // and define its properties
-            title:     'Switch to Welsh',      // like its title
+            title:     'Newid i\'r Gymraeg',      // like its title
             onClick: function(btn, map) {       // and its callback
                // map.setView([46.25,-121.8],10);
                 btn.state('English');  
@@ -287,7 +288,7 @@ var stateChangingButton = L.easyButton({
 });
 // Add the dialog box and then instantly close it
 var dialog = L.control.dialog()
-    .setContent("<h1>Too many search results</h1><p>Not all features will be shown. Please zoom in closer and search again</p>")
+    .setContent("<h1>Gormod o ganlyniadau chwilio</h1> <p>Ni fydd pob nodwedd yn cael ei dangos. Chwyddo'n agosach a chwilio eto</p><h1>Too many search results</h1><p>Not all features will be shown. Please zoom in closer and search again</p>")
     .addTo(map);
 
 dialog.close();
@@ -297,9 +298,10 @@ dialog.close();
 // ADD A CONTROL BUTTON
 // This button executes the search for all layers.
 
-L.easyButton('fa-refresh fa-4x', function(){
+L.easyButton('fa-refresh fa-3x', function(){
     if(legend_state == 1){
         dialog.close();
+ 
         legend_state = 0
     } else {
         //
@@ -314,12 +316,13 @@ generateMarkers(medical, medicalmk); // Get the medical query
 generateSparqlQuery("toilets"); // Get the toilet query
 generateMarkers(toilets, toiletsmk); // Generate the school markers for the current map bounds
 
-}).addTo(map);
+}
+).addTo(map);
 
 // Add the baselayers to the legend
     var baseLayers = {
-    "English": basemap_1,
-    "Cymraeg": basemap_0
+    "English Map (global)": basemap_1,
+    "Map Cymraeg (dim ond i Gymru)": basemap_0
 
 
 };
