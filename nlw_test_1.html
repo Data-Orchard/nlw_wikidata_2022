@@ -87,7 +87,7 @@ var myIcon = L.icon({
     //shadowAnchor: [22, 94]
 });
 
-var schoolsmk = L.icon({
+var visual_collections_mk = L.icon({
     iconUrl: 'schools.png',
     iconSize: [95, 95],
     iconAnchor: [22, 94],
@@ -107,7 +107,7 @@ var officialnamemk = L.icon({
     //shadowAnchor: [22, 94]
 });
 
-var transportmk = L.icon({
+var place_of_birth_mk = L.icon({
     iconUrl: 'transport.png',
     iconSize: [95, 95],
     iconAnchor: [22, 94],
@@ -209,14 +209,14 @@ var lakesmk = L.icon({
 
 // CREATE THE OVERLAY LAYERS
 
-var schools = L.layerGroup() // it's a schools overlay
-var transport = L.layerGroup() // it's a transport overlay
+var visual_collections = L.layerGroup() // it's a schools overlay
+var place_of_birth = L.layerGroup() // it's a transport overlay
 var medical = L.layerGroup() // it's a Medical overlay
 var toilets = L.layerGroup() // it's a toliets overlay
 var GLAM = L.layerGroup() // it's a GLAM overlay
 
 // These set default values for some variables
-var lang_select = "cy" //This means Cymraeg. It can be switched to en for English
+var lang_select = "cy,en" //This means Cymraeg for preference. It can be switched to en for English
 var linktext1OSM = "\">Gweld ar OpenStreetMap</a><br /><a href=\"" //This is text that can create hotlinks
 var linktext2OSM = "\"> Gweld ar Wikidata </a></span>" //This is text that can create hotlinks
 let legend_state = 0
@@ -240,7 +240,6 @@ var stateChangingButton = L.easyButton({
              //   map.setView([42.3748204,-71.1161913],16);
                 btn.state('Cymraeg');
                 lang_select = "en";
-                linktext1OSM = "\">Edit on OpenStreetMap</a><br /><a href=\"";
                 linktext2OSM = "\"> Edit on Wikidata </a></span>";
                 search_control.removeFrom(map);
                     search_control = new L.Control.Search({
@@ -265,8 +264,7 @@ var stateChangingButton = L.easyButton({
             onClick: function(btn, map) {       // and its callback
                // map.setView([46.25,-121.8],10);
                 btn.state('English');  
-                lang_select = "cy";  // change state on click!
-                linktext1OSM = "\">Gweld ar OpenStreetMap</a><br /><a href=\"";
+                lang_select = "cy,en";  // change state on click!
                 linktext2OSM = "\"> Gweld ar Wikidata </a></span>";
                 search_control.removeFrom(map);
                 search_control = new L.Control.Search({
@@ -307,10 +305,10 @@ L.easyButton('fa-refresh fa-3x', function(){
         //
     }
 
-generateSparqlQuery("schools"); // Get the Schools query
-generateMarkers(schools, schoolsmk); // Generate the school markers for the current map bounds
-generateSparqlQuery("transport");
-generateMarkers(transport, transportmk); // Get the transport query
+generateSparqlQuery("visual_collections"); // Get the Schools query
+generateMarkers(visual_collections, visual_collections_mk); // Generate the school markers for the current map bounds
+generateSparqlQuery("place_of_birth");
+generateMarkers(place_of_birth, place_of_birth_mk); // Get the transport query
 generateSparqlQuery("medical"); // Get the toilet query
 generateMarkers(medical, medicalmk); // Get the medical query
 generateSparqlQuery("toilets"); // Get the toilet query
@@ -329,8 +327,8 @@ generateMarkers(toilets, toiletsmk); // Generate the school markers for the curr
 
 //add the overlays to the legend
 var overlays = {
-   "Ysgol - Schools": schools,
-  "Trafnidiaeth - Transport": transport,
+   "Visual Collections": visual_collections,
+  "Place of Birth": place_of_birth,
  "Meddygol - Medical": medical,
  "Toiledau - Toliets": toilets
   /* "Diwylliant": GLAM,
