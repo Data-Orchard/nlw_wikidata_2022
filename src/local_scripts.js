@@ -1,51 +1,69 @@
 function generateSparqlQuery(category){
   bounds = map.getBounds();
   switch(category) {
-    case "schools":
-      var  chunk2 = `SELECT ?placeLabel ?location ?typeLabel ?place WHERE {
-        SERVICE wikibase:box {?place wdt:P625 ?location . bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral . bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral .}
-        FILTER EXISTS { ?place wdt:P31/wdt:P279* wd:Q2385804 }
-        ?place wdt:P31 ?type .
-       minus { ?place wdt:P576 ?end } .            
-       minus { ?place wdt:P31 wd:Q1244442 } . 
-          SERVICE wikibase:label { bd:serviceParam wikibase:language "${lang_select}". }
-      } LIMIT 200`;
-  
+    case "visual_collections":
+      chunk2 = `SELECT DISTINCT ?item ?itemLabel ?location ?type ?typeLabel ?pic ?url where 
+      {
+        wd:P1184 wdt:P1630 ?formatterurl . 
+        ?item wdt:P195 wd:Q666063 ;
+              wdt:P18 ?pic .
+        ?item wdt:P180 ?depicts .
+        ?item wdt:P31 ?type .
+        ?item wdt:P1184 ?llgc .
+         SERVICE wikibase:box { ?depicts wdt:P625 ?location .
+          bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral .
+          bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral . } 
+        BIND(IRI(REPLACE(?llgc, '^(.+)$', ?formatterurl)) AS ?url). 
+      SERVICE wikibase:label { bd:serviceParam wikibase:language "cy,en" } } LIMIT 20`;
       return sparql_2 = chunk2;
       break;
-
-      case "transport":
-    chunk2 = `SELECT ?place ?placeLabel ?location ?typeLabel ?operator ?operatorLabel WHERE {
+      case "place_of_birth":
+    chunk2 = `SELECT  ?item ?itemLabel ?location  ?pic ?url
+    (GROUP_CONCAT(?occu_label;separator=' --- ') as ?occu_combined)
+    where {
+    wd:P1648 wdt:P1630 ?formatterurl .
+      ?item wdt:P1648 ?llgc . 
+      ?item wdt:P106 ?occu .
+                  ?occu rdfs:label ?occu_label . 
+                FILTER (lang(?occu_label) = "cy") .
+      ?item wdt:P19 ?birthplace .
         SERVICE wikibase:box {
-            ?place wdt:P625 ?location .
-            bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral .
-            bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral .
-          }
-          FILTER EXISTS { ?place wdt:P31/wdt:P279* wd:Q12819564 }
-          ?place wdt:P31 ?type .
-        
-         minus { ?place wdt:P31 wd:Q4663385 }
-         minus { ?place wdt:P31 wd:Q54471221 }   
-         
-            SERVICE wikibase:label { bd:serviceParam wikibase:language "${lang_select}". }
-        } LIMIT 200
+         ?birthplace wdt:P625 ?location.
+         bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral .
+         bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral . 
+      } 
+      OPTIONAL { ?item wdt:P18 ?pic }
+      BIND(IRI(REPLACE(?llgc, '^(.+)$', ?formatterurl)) AS ?url).
+    FILTER (CONTAINS(str(?url),'biog')) . 
+     SERVICE wikibase:label { bd:serviceParam wikibase:language "cy,en". } 
+    } 
+    GROUP BY  ?item ?itemLabel ?location ?pic ?url
+    LIMIT 200
         `;
         return sparql_2 = chunk2
         break;
-        case "medical":
-          chunk2 = `SELECT ?place ?placeLabel ?location ?typeLabel ?operator ?operatorLabel WHERE {
-            SERVICE wikibase:box {
-                ?place wdt:P625 ?location .
-                bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral .
-                bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral .
-              }
-              FILTER EXISTS { ?place wdt:P31/wdt:P279* wd:Q4260475 }
-              ?place wdt:P31 ?type .
-             ?place wdt:P137 ?operator .
-             minus {?place  wdt:P31 wd:Q64578911 .} 
-             
-                SERVICE wikibase:label { bd:serviceParam wikibase:language "${lang_select}". }
-            } LIMIT 200
+        case "place_of_birth":
+          chunk2 = `SELECT  ?item ?itemLabel ?location  ?pic ?url
+          (GROUP_CONCAT(?occu_label;separator=' --- ') as ?occu_combined)
+          where {
+          wd:P1648 wdt:P1630 ?formatterurl .
+            ?item wdt:P1648 ?llgc . 
+            ?item wdt:P106 ?occu .
+                        ?occu rdfs:label ?occu_label . 
+                      FILTER (lang(?occu_label) = "cy") .
+            ?item wdt:P19 ?birthplace .
+              SERVICE wikibase:box {
+               ?birthplace wdt:P625 ?location.
+               bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral .
+               bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral . 
+            } 
+            OPTIONAL { ?item wdt:P18 ?pic }
+            BIND(IRI(REPLACE(?llgc, '^(.+)$', ?formatterurl)) AS ?url).
+          FILTER (CONTAINS(str(?url),'biog')) . 
+           SERVICE wikibase:label { bd:serviceParam wikibase:language "cy,en". } 
+          } 
+          GROUP BY  ?item ?itemLabel ?location ?pic ?url
+          LIMIT 200
             `;
             return sparql_2 = chunk2
             break;
@@ -91,15 +109,17 @@ var counter = 0;
             if (x.location.value.match(/^Point\((.+) (.+)\)$/)) {
               var lon = parseFloat(RegExp.$1);
               var lat = parseFloat(RegExp.$2);
+              if(x.pic == undefined){var image_url = "images/wikidata.png"} else {var image_url = x.pic.value}
+              if(x.itemLabel == undefined){var title = ""} else {title = x.itemLabel.value}
+              var html =`<h3> ${title} </h3><img src="${image_url}" width = "150px"><br /> <a href="${x.item.value}"${linktext2OSM}</a>
+              `
               
-              var html =`<h3> ${x.placeLabel.value} </h3><span class='link_format'> <a href=\"https://www.openstreetmap.org/#map=16/${lat}/${lon}${linktext1OSM}${x.place.value}${linktext2OSM}`
-              
-              if (x.placeLabel.value.match(/^Q[0-9]+$/)) {
+             // if (title.match(/^Q[0-9]+$/)) {
                //Do not add the point to the layer
-  } else {
+  //} else {
              L.marker([lat, lon],{icon: marker_name}).bindPopup(html).openPopup().addTo(map_layer);
              counter++;
-            }
+    //        }
             } 
     
     
