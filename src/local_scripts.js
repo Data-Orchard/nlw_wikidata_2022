@@ -14,34 +14,9 @@ function generateSparqlQuery(category){
           bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral .
           bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral . } 
         BIND(IRI(REPLACE(?llgc, '^(.+)$', ?formatterurl)) AS ?url). 
-      SERVICE wikibase:label { bd:serviceParam wikibase:language "cy,en" } } LIMIT 20`;
+      SERVICE wikibase:label { bd:serviceParam wikibase:language "${lang_select}" } } LIMIT 20`;
       return sparql_2 = chunk2;
       break;
-      case "place_of_birth":
-    chunk2 = `SELECT  ?item ?itemLabel ?location  ?pic ?url
-    (GROUP_CONCAT(?occu_label;separator=' --- ') as ?occu_combined)
-    where {
-    wd:P1648 wdt:P1630 ?formatterurl .
-      ?item wdt:P1648 ?llgc . 
-      ?item wdt:P106 ?occu .
-                  ?occu rdfs:label ?occu_label . 
-                FILTER (lang(?occu_label) = "cy") .
-      ?item wdt:P19 ?birthplace .
-        SERVICE wikibase:box {
-         ?birthplace wdt:P625 ?location.
-         bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral .
-         bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral . 
-      } 
-      OPTIONAL { ?item wdt:P18 ?pic }
-      BIND(IRI(REPLACE(?llgc, '^(.+)$', ?formatterurl)) AS ?url).
-    FILTER (CONTAINS(str(?url),'biog')) . 
-     SERVICE wikibase:label { bd:serviceParam wikibase:language "cy,en". } 
-    } 
-    GROUP BY  ?item ?itemLabel ?location ?pic ?url
-    LIMIT 200
-        `;
-        return sparql_2 = chunk2
-        break;
         case "place_of_birth":
           chunk2 = `SELECT  ?item ?itemLabel ?location  ?pic ?url
           (GROUP_CONCAT(?occu_label;separator=' --- ') as ?occu_combined)
@@ -50,7 +25,7 @@ function generateSparqlQuery(category){
             ?item wdt:P1648 ?llgc . 
             ?item wdt:P106 ?occu .
                         ?occu rdfs:label ?occu_label . 
-                      FILTER (lang(?occu_label) = "cy") .
+                      FILTER (lang(?occu_label) = "${occupation_lang}") .
             ?item wdt:P19 ?birthplace .
               SERVICE wikibase:box {
                ?birthplace wdt:P625 ?location.
@@ -60,30 +35,58 @@ function generateSparqlQuery(category){
             OPTIONAL { ?item wdt:P18 ?pic }
             BIND(IRI(REPLACE(?llgc, '^(.+)$', ?formatterurl)) AS ?url).
           FILTER (CONTAINS(str(?url),'biog')) . 
-           SERVICE wikibase:label { bd:serviceParam wikibase:language "cy,en". } 
+           SERVICE wikibase:label { bd:serviceParam wikibase:language "${lang_select}". } 
           } 
           GROUP BY  ?item ?itemLabel ?location ?pic ?url
           LIMIT 200
             `;
             return sparql_2 = chunk2
             break;
-            case "toilets":
-          chunk2 = `SELECT ?place ?placeLabel ?location ?typeLabel ?locationLabel WHERE {
-            SERVICE wikibase:box {
-                ?place wdt:P625 ?location .
-                bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral .
-                bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral .
-              }
-              FILTER EXISTS { ?place wdt:P31 wd:Q813966 }
-              ?place wdt:P31 ?type .
-             
-              
-             
-                SERVICE wikibase:label { bd:serviceParam wikibase:language "${lang_select}". }
-            } LIMIT 200
+            case "place_of_death":
+          chunk2 = `SELECT  ?item ?itemLabel ?location  ?pic ?url
+          (GROUP_CONCAT(?occu_label;separator=' --- ') as ?occu_combined)
+          where {
+          wd:P1648 wdt:P1630 ?formatterurl .
+            ?item wdt:P1648 ?llgc . 
+            ?item wdt:P106 ?occu .
+                        ?occu rdfs:label ?occu_label . 
+                      FILTER (lang(?occu_label) = "${occupation_lang}") .
+            ?item wdt:P20 ?deathplace .
+              SERVICE wikibase:box {
+               ?deathplace wdt:P625 ?location.
+               bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral .
+               bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral . 
+            } 
+            OPTIONAL { ?item wdt:P18 ?pic }
+            BIND(IRI(REPLACE(?llgc, '^(.+)$', ?formatterurl)) AS ?url).
+          FILTER (CONTAINS(str(?url),'biog')) . 
+           SERVICE wikibase:label { bd:serviceParam wikibase:language "${lang_select}". } 
+          } 
+          GROUP BY  ?item ?itemLabel ?location ?pic ?url
             `;
             return sparql_2 = chunk2
             break;
+            case "place_of_education":
+              chunk2 = `SELECT  ?item ?itemLabel ?location  ?pic ?url
+              (GROUP_CONCAT(?occu_label;separator=' --- ') as ?occu_combined)
+              where {
+              wd:P1648 wdt:P1630 ?formatterurl .
+                ?item wdt:P1648 ?llgc . 
+                ?item wdt:P106 ?occu .
+                            ?occu rdfs:label ?occu_label . 
+                          FILTER (lang(?occu_label) = "${occupation_lang}") .
+                ?item wdt:P69 ?educationplace .
+                  SERVICE wikibase:box {
+                   ?educationplace wdt:P625 ?location.
+                   bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral .
+                   bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral . 
+                } 
+                OPTIONAL { ?item wdt:P18 ?pic }
+                BIND(IRI(REPLACE(?llgc, '^(.+)$', ?formatterurl)) AS ?url).
+              FILTER (CONTAINS(str(?url),'biog')) . 
+               SERVICE wikibase:label { bd:serviceParam wikibase:language "${lang_select}". } 
+              } 
+              GROUP BY  ?item ?itemLabel ?location ?pic ?url`
     default:
       // Code block
  
@@ -110,8 +113,10 @@ var counter = 0;
               var lon = parseFloat(RegExp.$1);
               var lat = parseFloat(RegExp.$2);
               if(x.pic == undefined){var image_url = "images/wikidata.png"} else {var image_url = x.pic.value}
-              if(x.itemLabel == undefined){var title = ""} else {title = x.itemLabel.value}
-              var html =`<h3> ${title} </h3><img src="${image_url}" width = "150px"><br /> <a href="${x.item.value}"${linktext2OSM}</a>
+              if(x.itemLabel == undefined){var title = ""} else {var title = x.itemLabel.value}
+              if(x.occu_combined == undefined){var occupation =""} else {var occupation = occupation_select + x.occu_combined.value}
+              if(x.url == undefined){var link = ""} else {var link = x.url.value}
+              var html =`<h3> ${title} </h3><img src="${image_url}" width = "150px"><br /> ${occupation}<br /><a href="${link}">${view_at_nlw}</a><br /><a href="${x.item.value}"${linktext2OSM}</a><br />
               `
               
              // if (title.match(/^Q[0-9]+$/)) {
