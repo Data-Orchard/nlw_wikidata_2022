@@ -99,6 +99,15 @@ function generateSparqlQuery(category){
 }
 
 function generateMarkers(map_layer, marker_name){
+
+  var x_length = bounds.getWest() - bounds.getEast();
+  var y_length = bounds.getNorth() - bounds.getSouth();
+  var x_dither;
+  var y_dither;
+  
+
+
+
 var counter = 0;
   map_layer.clearLayers(); // Add the toilets items to the toilets overlay
         fetch("https://query.wikidata.org/sparql?query=" + encodeURIComponent(sparql_2), {
@@ -110,8 +119,22 @@ var counter = 0;
         }).then(a => a.json()).then(a => {
           a.results.bindings.forEach(x => {
             if (x.location.value.match(/^Point\((.+) (.+)\)$/)) {
+              var plus_minus = Math.floor(Math.random() * 2) + 1;
               var lon = parseFloat(RegExp.$1);
               var lat = parseFloat(RegExp.$2);
+              x_dither = Math.random()*(Math.abs(x_length/10));
+              y_dither = Math.random()*(Math.abs(y_length/10));
+              if (plus_minus <= 1){
+                new_lon = lon - x_dither;
+                  } else{
+                new_lon = lon + x_dither;
+                }
+              plus_minus = Math.floor(Math.random() * 2) + 1;
+              if (plus_minus <= 1){
+                new_lat = lat - y_dither;
+                  } else{
+                new_lat = lat + y_dither;
+                }
               if(x.pic == undefined){var image_url = "images/wikidata.png"} else {var image_url = x.pic.value}
               if(x.itemLabel == undefined){var title = ""} else {var title = x.itemLabel.value}
               if(x.occu_combined == undefined){var occupation =""} else {var occupation = occupation_select + x.occu_combined.value}
@@ -122,7 +145,7 @@ var counter = 0;
              // if (title.match(/^Q[0-9]+$/)) {
                //Do not add the point to the layer
   //} else {
-             L.marker([lat, lon],{icon: marker_name}).bindPopup(html).openPopup().addTo(map_layer);
+             L.marker([new_lat, new_lon],{icon: marker_name}).bindPopup(html).openPopup().addTo(map_layer);
              counter++;
     //        }
             } 
