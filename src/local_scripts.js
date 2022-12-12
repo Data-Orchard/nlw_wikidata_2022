@@ -14,7 +14,7 @@ function generateSparqlQuery(category){
           bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral .
           bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral . } 
         BIND(IRI(REPLACE(?llgc, '^(.+)$', ?formatterurl)) AS ?url). 
-      SERVICE wikibase:label { bd:serviceParam wikibase:language "${lang_select}" } } LIMIT 20`;
+      SERVICE wikibase:label { bd:serviceParam wikibase:language "${lang_select}" } } LIMIT 200`;
       return sparql_2 = chunk2;
       break;
         case "place_of_birth":
@@ -63,7 +63,7 @@ function generateSparqlQuery(category){
            SERVICE wikibase:label { bd:serviceParam wikibase:language "${lang_select}". } 
           } 
           GROUP BY  ?item ?itemLabel ?location ?pic ?url
-            `;
+          LIMIT 200 `;
             return sparql_2 = chunk2
             break;
             case "place_of_education":
@@ -86,7 +86,8 @@ function generateSparqlQuery(category){
               FILTER (CONTAINS(str(?url),'biog')) . 
                SERVICE wikibase:label { bd:serviceParam wikibase:language "${lang_select}". } 
               } 
-              GROUP BY  ?item ?itemLabel ?location ?pic ?url`
+              GROUP BY  ?item ?itemLabel ?location ?pic ?url
+              LIMIT 200`
     default:
       // Code block
  
