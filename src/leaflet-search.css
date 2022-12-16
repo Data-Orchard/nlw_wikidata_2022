@@ -1,7 +1,7 @@
  
 .leaflet-container .leaflet-control-search {
 	position:relative;
-	float:left;
+	float:right;
 	background:#fff;
 	color:#1978cf;
 	border: 2px solid rgba(0,0,0,0.2);
@@ -52,11 +52,11 @@
 	opacity: 1;
 }
 .leaflet-control-search .search-cancel span {
-	display:none;/* comment for cancel button imageless */
+	/*display:none; comment for cancel button imageless 
 	font-size:18px;
 	line-height:20px;
 	color:#ccc;
-	font-weight:bold;
+	font-weight:bold;*/
 }
 .leaflet-control-search .search-cancel:hover span {
 	color:#aaa;

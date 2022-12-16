@@ -19,7 +19,7 @@ function generateSparqlQuery(category){
       break;
         case "place_of_birth":
           chunk2 = `SELECT  ?item ?itemLabel ?location  ?pic ?url
-          (GROUP_CONCAT(?occu_label;separator=' --- ') as ?occu_combined)
+          (GROUP_CONCAT(?occu_label;separator=', ') as ?occu_combined)
           where {
           wd:P1648 wdt:P1630 ?formatterurl .
             ?item wdt:P1648 ?llgc . 
@@ -44,7 +44,7 @@ function generateSparqlQuery(category){
             break;
             case "place_of_death":
           chunk2 = `SELECT  ?item ?itemLabel ?location  ?pic ?url
-          (GROUP_CONCAT(?occu_label;separator=' --- ') as ?occu_combined)
+          (GROUP_CONCAT(?occu_label;separator=', ') as ?occu_combined)
           where {
           wd:P1648 wdt:P1630 ?formatterurl .
             ?item wdt:P1648 ?llgc . 
@@ -68,7 +68,7 @@ function generateSparqlQuery(category){
             break;
             case "place_of_education":
               chunk2 = `SELECT  ?item ?itemLabel ?location  ?pic ?url
-              (GROUP_CONCAT(?occu_label;separator=' --- ') as ?occu_combined)
+              (GROUP_CONCAT(?occu_label;separator=', ') as ?occu_combined)
               where {
               wd:P1648 wdt:P1630 ?formatterurl .
                 ?item wdt:P1648 ?llgc . 
@@ -88,6 +88,103 @@ function generateSparqlQuery(category){
               } 
               GROUP BY  ?item ?itemLabel ?location ?pic ?url
               LIMIT 200`
+              return sparql_2 = chunk2
+              break;
+              case "NLW_place_of_birth":
+                chunk2 = `SELECT  ?item ?itemLabel ?location ?pic 
+
+                (SAMPLE(?url) as ?url_sampled)
+                (GROUP_CONCAT(DISTINCT ?occu_label;separator=', ') as ?occu_combined)
+                
+                where {
+                wd:P2966 wdt:P1630 ?formatterurl .
+                  ?item wdt:P2966 ?llgc .
+                
+                  ?item wdt:P19 ?birthplace .  
+                  ?item wdt:P106 ?occu .
+                  ?occu rdfs:label ?occu_label . 
+                            FILTER (lang(?occu_label) = "${occupation_lang}") .
+                 
+                
+                     SERVICE wikibase:box {
+                     ?birthplace wdt:P625 ?location.
+                     bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral .
+                     bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral . 
+                  }  
+                  
+                  OPTIONAL { ?item wdt:P18 ?pic }
+                  BIND(IRI(REPLACE(?llgc, '^(.+)$', ?formatterurl)) AS ?url).
+                 
+                 SERVICE wikibase:label { bd:serviceParam wikibase:language "${lang_select}". } 
+                } 
+                
+                GROUP BY  ?item ?itemLabel ?location ?pic
+                LIMIT 200`
+                return sparql_2 = chunk2
+                break;
+                case "NLW_place_of_death":
+                  chunk2 = `SELECT  ?item ?itemLabel ?location ?pic 
+
+                  (SAMPLE(?url) as ?url_sampled)
+                  (GROUP_CONCAT(DISTINCT ?occu_label;separator=', ') as ?occu_combined)
+                  
+                  where {
+                  wd:P2966 wdt:P1630 ?formatterurl .
+                    ?item wdt:P2966 ?llgc .
+                  
+                    ?item wdt:P20 ?deathplace .  
+                    ?item wdt:P106 ?occu .
+                    ?occu rdfs:label ?occu_label . 
+                              FILTER (lang(?occu_label) = "${occupation_lang}") .
+                   
+                  
+                       SERVICE wikibase:box {
+                       ?deathplace wdt:P625 ?location.
+                       bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral .
+                       bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral .                     }  
+                    
+                    OPTIONAL { ?item wdt:P18 ?pic }
+                    BIND(IRI(REPLACE(?llgc, '^(.+)$', ?formatterurl)) AS ?url).
+                   
+                   SERVICE wikibase:label { bd:serviceParam wikibase:language "${lang_select}". } 
+                  } 
+                  
+                  GROUP BY  ?item ?itemLabel ?location ?pic
+                  LIMIT 200`
+                  return sparql_2 = chunk2
+                  break;
+                  case "NLW_place_of_education":
+                    chunk2 = `SELECT  ?item ?itemLabel ?location ?pic 
+
+                    (SAMPLE(?url) as ?url)
+                    (GROUP_CONCAT(DISTINCT ?occu_label;separator=', ') as ?occu_combined)
+                    
+                    where {
+                    wd:P2966 wdt:P1630 ?formatterurl .
+                      ?item wdt:P2966 ?llgc .
+                    
+                      ?item wdt:P69 ?educationplace .  
+                      ?item wdt:P106 ?occu .
+                      ?occu rdfs:label ?occu_label . 
+                                FILTER (lang(?occu_label) = "${occupation_lang}") .
+                     
+                    
+                         SERVICE wikibase:box {
+                         ?educationplace wdt:P625 ?location.
+                         bd:serviceParam wikibase:cornerWest "Point(${bounds.getWest()} ${bounds.getNorth()})"^^geo:wktLiteral .
+                         bd:serviceParam wikibase:cornerEast "Point(${bounds.getEast()} ${bounds.getSouth()})"^^geo:wktLiteral .                      
+                      }  
+                      
+                      OPTIONAL { ?item wdt:P18 ?pic }
+                      BIND(IRI(REPLACE(?llgc, '^(.+)$', ?formatterurl)) AS ?url).
+                     
+                     SERVICE wikibase:label { bd:serviceParam wikibase:language "${lang_select}". } 
+                    } 
+                    
+                    GROUP BY  ?item ?itemLabel ?location ?pic
+                    LIMIT 200`
+                    return sparql_2 = chunk2
+                    break;                  
     default:
       // Code block
  

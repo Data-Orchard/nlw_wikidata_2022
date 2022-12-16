@@ -37,9 +37,12 @@
         background: white;
         width: 100px;
     }
+
+
         </style>
       </head>
     <body>
+
         <div id="map"></div>
 
         <script>
@@ -118,6 +121,36 @@ var place_of_death_mk = L.icon({
     //shadowAnchor: [22, 94]
 });
 
+var NLW_place_of_birth_mk = L.icon({
+    iconUrl: 'images/diamond.png',
+    iconSize: [75, 75],
+    iconAnchor: [22, 74],
+    popupAnchor: [15, -75],
+    //shadowUrl: 'my-icon-shadow.png',
+    //shadowSize: [68, 95],
+    //shadowAnchor: [22, 94]
+});
+
+var NLW_place_of_death_mk = L.icon({
+    iconUrl: 'images/pentagon.png',
+    iconSize: [75, 75],
+    iconAnchor: [22, 74],
+    popupAnchor: [15, -75],
+    //shadowUrl: 'my-icon-shadow.png',
+    //shadowSize: [68, 95],
+    //shadowAnchor: [22, 94]
+});
+
+var NLW_place_of_education_mk = L.icon({
+    iconUrl: 'images/ring.png',
+    iconSize: [75, 75],
+    iconAnchor: [22, 74],
+    popupAnchor: [15, -75],
+    //shadowUrl: 'my-icon-shadow.png',
+    //shadowSize: [68, 95],
+    //shadowAnchor: [22, 94]
+});
+
 
 // CREATE THE OVERLAY LAYERS
 
@@ -126,6 +159,9 @@ var place_of_birth = L.layerGroup() // it's a transport overlay
 var place_of_death = L.layerGroup() // it's a Medical overlay
 var place_of_education = L.layerGroup() // it's a toliets overlay
 var GLAM = L.layerGroup() // it's a GLAM overlay
+var NLW_place_of_birth = L.layerGroup()
+var NLW_place_of_death = L.layerGroup()
+var NLW_place_of_education = L.layerGroup()
 
 // These set default values for some variables
 var lang_select = "cy,en" //This means Cymraeg for preference. It can be switched to en for English
@@ -136,8 +172,7 @@ var occupation_lang = "cy"
 var view_at_nlw = "Gweld y cofnod"
 let legend_state = 0
 var error_popup = "<h1>Gormod o ganlyniadau chwilio</h1> <p>Ni fydd pob nodwedd yn cael ei dangos. Chwyddo'n agosach a chwilio eto</p>"
-
-var legend = L.control({ position: "bottomleft" });
+var legend = L.control({ position: "bottomleft" })
 
 let max_markers = 200
 
@@ -161,18 +196,19 @@ var stateChangingButton = L.easyButton({
                 linktext2OSM = "\"> Edit on Wikidata </a></span>";
                 search_control.removeFrom(map);
                     search_control = new L.Control.Search({
-		            url: `https://nominatim.openstreetmap.org/search?format=json&q={s}&accept-language=en,cy`,
+		            url: `https://nominatim.openstreetmap.org/search?format=json&q={s}&accept-language=en`,
 		            jsonpParam: 'json_callback',
 		            propertyName: 'display_name',
 		            propertyLoc: ['lat','lon'],
-		            marker: L.circleMarker([0,0],{radius:30}),
-		            autoCollapse: true,
+		            marker: false,
+		            autoCollapse: false,
 		            autoType: false,
 		            zoom: 14,	
-                    textPlaceholder: "Search",
+                    textPlaceholder: "Search the map",
+                    position: 'topleft',
                     minLength: 2
 	                });
-                search_control.addTo(map)
+                search_control.addTo(map);
                 
             }
         }, {
@@ -193,14 +229,15 @@ var stateChangingButton = L.easyButton({
 		            jsonpParam: 'json_callback',
 		            propertyName: 'display_name',
 		            propertyLoc: ['lat','lon'],
-		            marker: L.circleMarker([0,0],{radius:30}),
-		            autoCollapse: true,
+		            marker: false,
+		            autoCollapse: false,
 		            autoType: false,
 		            zoom: 14,	
-                    textPlaceholder: "Chwilio...",
-                    minLength: 2
+                    textPlaceholder: "Chwilio'r map",
+                    minLength: 2,
+                    position: 'topleft'
 	                });
-                search_control.addTo(map)
+                search_control.addTo(map);
             
             }
     }]
@@ -212,12 +249,67 @@ var dialog = L.control.dialog()
 
 dialog.close();
 
-    stateChangingButton.addTo(map);
+    stateChangingButton.setPosition('topright').addTo(map);
+
+
+// Add the baselayers to the legend
+    var baseLayers = {
+    "English Map (global)": basemap_1,
+    "Map Cymraeg (dim ond i Gymru)": basemap_0
+
+
+};
+
+//add the overlays to the legend
+var overlays = {
+   "Casgliad gweledol - Visual collections": visual_collections,
+  "YBC - DWB: Lleoliad geni - Place of birth": place_of_birth,
+ "YBC - DWB: Man marwolaeth - Place of death": place_of_death,
+ "YBC - DWB: Lle addysg - Place of education": place_of_education,
+ "LlGC - NLW: Lleoliad geni - Place of birth": NLW_place_of_birth,
+ "LlGC - NLW: Man marwolaeth - Place of death": NLW_place_of_death,
+ "LlGC - NLW: Lle addysg - Place of education": NLW_place_of_education
+  /* "Diwylliant": GLAM,
+   "Safleoedd Hanesyddol": historic,
+   "Safleoedd Cynhanesyddol": prehistoric,
+   "Bryniau a Mynyddoedd": hills,
+   "Traethau": beaches,
+   //"Parciau Gwledig": country_parks,
+   "Llynnoedd a Chronfeydd Dŵr": lakes,
+   "Enwau Lleoedd Safonol Cymru": officialnames
+*/
+};
+
+
+
+
+// Make the map
+var hash = new L.Hash(map);
+L.control.layers(baseLayers,overlays,{collapsed:false}).setPosition('topright').addTo(map);
+
+ 
+
+var search_control = new L.Control.Search({
+		url: `https://nominatim.openstreetmap.org/search?format=json&q={s}&accept-language=$cy,en`,
+		jsonpParam: 'json_callback',
+		propertyName: 'display_name',
+		propertyLoc: ['lat','lon'],
+		marker: false,
+		autoCollapse: false,
+		autoType: false,
+		zoom: 14,	
+        textPlaceholder: "Chwilio'r map",
+        position: 'topleft',
+        minLength: 2
+    
+	})
+    
+    search_control.addTo(map)
 
 // ADD A CONTROL BUTTON
 // This button executes the search for all layers.
 
-L.easyButton('fa-refresh fa-3x', function(){
+L.easyButton('<p>Chwilio\'r casgliadau - Search the collections</p>', function(){
     if(legend_state == 1){
         dialog.close();
  
@@ -234,57 +326,16 @@ generateSparqlQuery("place_of_death"); // Get the toilet query
 generateMarkers(place_of_death, place_of_death_mk); // Get the medical query
 generateSparqlQuery("place_of_education"); // Get the toilet query
 generateMarkers(place_of_education, place_of_education_mk); // Generate the school markers for the current map bounds
+generateSparqlQuery("NLW_place_of_birth"); // Get the toilet query
+generateMarkers(NLW_place_of_birth, NLW_place_of_birth_mk); // Generate the school markers for the current map bounds
+generateSparqlQuery("NLW_place_of_death"); // Get the toilet query
+generateMarkers(NLW_place_of_death, NLW_place_of_death_mk); // Generate the school markers for the current map bounds
+generateSparqlQuery("NLW_place_of_education"); // Get the toilet query
+generateMarkers(NLW_place_of_education, NLW_place_of_education_mk); // Generate the school markers for the current map bounds
 
 }
-).addTo(map);
-
-// Add the baselayers to the legend
-    var baseLayers = {
-    "English Map (global)": basemap_1,
-    "Map Cymraeg (dim ond i Gymru)": basemap_0
-
-
-};
-
-//add the overlays to the legend
-var overlays = {
-   "Visual Collections": visual_collections,
-  "Place of Birth": place_of_birth,
- "Place of Death": place_of_death,
- "Place of education": place_of_education
-  /* "Diwylliant": GLAM,
-   "Safleoedd Hanesyddol": historic,
-   "Safleoedd Cynhanesyddol": prehistoric,
-   "Bryniau a Mynyddoedd": hills,
-   "Traethau": beaches,
-   //"Parciau Gwledig": country_parks,
-   "Llynnoedd a Chronfeydd Dŵr": lakes,
-   "Enwau Lleoedd Safonol Cymru": officialnames
-*/
-};
-
-// Make the mao
-var hash = new L.Hash(map);
-
-L.control.layers(baseLayers, overlays, {collapsed:false}).addTo(map);
-
-var search_control = new L.Control.Search({
-		url: `https://nominatim.openstreetmap.org/search?format=json&q={s}&accept-language=$cy,en`,
-		jsonpParam: 'json_callback',
-		propertyName: 'display_name',
-		propertyLoc: ['lat','lon'],
-		marker: L.circleMarker([0,0],{radius:30}),
-		autoCollapse: true,
-		autoType: false,
-		zoom: 14,	
-    textPlaceholder: "Chwilio...",
-    minLength: 2
-    
-	})
-    
-    search_control.addTo(map)
-
-
+).setPosition('topright').addTo(map);
+ //addTo(map);
 
         </script>
         
