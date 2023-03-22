@@ -93,7 +93,7 @@ function generateSparqlQuery(category){
               case "NLW_place_of_birth":
                 chunk2 = `SELECT  ?item ?itemLabel ?location ?pic 
 
-                (SAMPLE(?url) as ?url_sampled)
+                (SAMPLE(?url) as ?url)
                 (GROUP_CONCAT(DISTINCT ?occu_label;separator=', ') as ?occu_combined)
                 
                 where {
@@ -125,7 +125,7 @@ function generateSparqlQuery(category){
                 case "NLW_place_of_death":
                   chunk2 = `SELECT  ?item ?itemLabel ?location ?pic 
 
-                  (SAMPLE(?url) as ?url_sampled)
+                  (SAMPLE(?url) as ?url)
                   (GROUP_CONCAT(DISTINCT ?occu_label;separator=', ') as ?occu_combined)
                   
                   where {
